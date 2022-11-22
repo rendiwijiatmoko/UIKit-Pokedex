@@ -9,6 +9,19 @@ import UIKit
 
 class HomeViewController: UIViewController {
 
+    // MARK: - Variables
+    let data: [PokemonList] = [
+        PokemonList(name: "bulbasaur", image: "person", id: 1),
+        PokemonList(name: "ivysaur", image: "person", id: 2),
+        PokemonList(name: "venusaur", image: "person", id: 3),
+        PokemonList(name: "charmander", image: "person", id: 4),
+        PokemonList(name: "charmeleon", image: "person", id: 5),
+        PokemonList(name: "bulbasaur", image: "person", id: 1),
+        PokemonList(name: "ivysaur", image: "person", id: 2),
+        PokemonList(name: "venusaur", image: "person", id: 3),
+        PokemonList(name: "charmander", image: "person", id: 4),
+        PokemonList(name: "charmeleon", image: "person", id: 5),
+    ]
     // MARK: - UI Components
     let descriptionLabel: UILabel = {
         let label = UILabel()
@@ -34,6 +47,14 @@ class HomeViewController: UIViewController {
         textField.tintColor = .secondaryLabel
         return textField
     }()
+    
+    let listCollectionPokemon: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        return collection
+    }()
+    
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -67,6 +88,42 @@ class HomeViewController: UIViewController {
             searchTextField.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
             searchTextField.heightAnchor.constraint(equalToConstant: 40)
         ])
+        
+        // MARK: - Collection List Pokemon
+        self.view.addSubview(listCollectionPokemon)
+        listCollectionPokemon.register(PokemonCollectionViewCell.self, forCellWithReuseIdentifier: PokemonCollectionViewCell.identifier)
+        listCollectionPokemon.dataSource = self
+        listCollectionPokemon.delegate = self
+        listCollectionPokemon.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            listCollectionPokemon.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 30),
+            listCollectionPokemon.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 24),
+            listCollectionPokemon.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -24),
+            listCollectionPokemon.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
+        ])
     }
+}
 
+extension HomeViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return data.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PokemonCollectionViewCell.identifier, for: indexPath) as? PokemonCollectionViewCell {
+            cell.configuration(pokemon: data[indexPath.row])
+            return cell
+        }
+        else {
+            return UICollectionViewCell()
+        }
+    }
+}
+
+extension HomeViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let size = (collectionView.frame.width - 10) / 2
+        return CGSize(width: size, height: size)
+    }
 }
